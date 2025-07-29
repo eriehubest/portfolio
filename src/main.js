@@ -26,7 +26,7 @@ const textureMap = {
         day:"/textures/Table.webp-n"
     },
     Piano: {
-        day:"/textures/Piano-specific.webp"
+        day:"textures/Piano-specific.webp"
     },
     PC: {
         day:"/textures/PC.webp-n"
@@ -35,7 +35,7 @@ const textureMap = {
         day:"/textures/Miscellaneous.webp-n"
     },
     Chair: {
-        day:"/textures/Chair.webp"
+        day:"textures/Chair.webp"
     },
     Button: {
         day:"/textures/Buttons.webp-n"
@@ -51,7 +51,7 @@ Object.entries(textureMap).forEach(([key, paths]) => {
     loadedTextures.day[key] = dayTexture
 })
 
-loader.load("/models/room-v3.glb", (glb)=>{
+loader.load("models/room-v3.glb", (glb)=>{
     glb.scene.traverse(child=>{
         if(child.isMesh){
             Object.keys(textureMap).forEach(key=>{
