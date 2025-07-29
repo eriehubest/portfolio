@@ -1,8 +1,8 @@
-import './style.scss'
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import 'public/src/style.scss'
+import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js";
 
 const canvas = document.querySelector("#experience-canvas")
 const sizes = {
@@ -26,7 +26,7 @@ const textureMap = {
         day:"/textures/Table.webp-n"
     },
     Piano: {
-        day:"textures/Piano-specific.webp"
+        day:"public/textures/Piano-specific.webp"
     },
     PC: {
         day:"/textures/PC.webp-n"
@@ -35,7 +35,7 @@ const textureMap = {
         day:"/textures/Miscellaneous.webp-n"
     },
     Chair: {
-        day:"textures/Chair.webp"
+        day:"public/textures/Chair.webp"
     },
     Button: {
         day:"/textures/Buttons.webp-n"
@@ -51,7 +51,7 @@ Object.entries(textureMap).forEach(([key, paths]) => {
     loadedTextures.day[key] = dayTexture
 })
 
-loader.load("models/room-v3.glb", (glb)=>{
+loader.load("public/models/room-v3.glb", (glb)=>{
     glb.scene.traverse(child=>{
         if(child.isMesh){
             Object.keys(textureMap).forEach(key=>{
