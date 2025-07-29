@@ -1,8 +1,8 @@
-import 'public/src/style.scss'
-import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
-import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
-import { DRACOLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js";
+import '/src/style.scss'
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 const canvas = document.querySelector("#experience-canvas")
 const sizes = {
@@ -20,25 +20,28 @@ loader.setDRACOLoader( dracoLoader )
 
 const textureMap = {
     Walls: {
-        day:"/textures/Walls.webp-n"
+        day:"textures/walls.webp"
     },
     Table: {
-        day:"/textures/Table.webp-n"
+        day:"textures/Table.webp"
     },
     Piano: {
-        day:"public/textures/Piano-specific.webp"
+        day:"textures/Piano-specific.webp"
     },
     PC: {
-        day:"/textures/PC.webp-n"
+        day:"textures/PC.webp"
     },
     Mis: {
-        day:"/textures/Miscellaneous.webp-n"
+        day:"textures/Miscellaneous.webp"
     },
     Chair: {
-        day:"public/textures/Chair.webp"
+        day:"textures/Chair.webp"
+    },
+    botton: {
+        day:"textures/Buttons.webp"
     },
     Button: {
-        day:"/textures/Buttons.webp-n"
+        day:"textures/Pc_final.webp"
     }
 }
 
@@ -46,32 +49,49 @@ const loadedTextures = {
     day:{}
 }
 Object.entries(textureMap).forEach(([key, paths]) => {
-    const dayTexture = textureLoader.load(paths.day)
+    const dayTexture = textureLoader.load(
+        paths.day,
+        undefined,
+        undefined,
+        (err) => {
+            console.error(`Failed to load texture: ${paths.day}`, err);
+        }
+    );
     dayTexture.flipY = false
+    dayTexture.colorSpace = THREE.SRGBColorSpace
     loadedTextures.day[key] = dayTexture
 })
 
-loader.load("public/models/room-v3.glb", (glb)=>{
+loader.load("models/room.glb", (glb)=>{
     glb.scene.traverse(child=>{
         if(child.isMesh){
+            console.log(`Found mesh: ${child.name}`);
+            if (!child.geometry.attributes.uv) {
+                console.warn(`${child.name} has no UVs!`);
+            }
             Object.keys(textureMap).forEach(key=>{
                 if(child.name.includes(key)){
                     const material = new THREE.MeshBasicMaterial({
-                        map:loadedTextures.day[key]
+                        map:loadedTextures.day[key],
+                        transparent: false, // 👈 Important if black issue might be alpha-related
+                        alphaTest: 0.01      // 👈 Optional: helps avoid fully transparent pixels
                     })
+                    console.log(`Applying texture '${key}' to mesh '${child.name}'`);
 
                     child.material = material
                 }
             })
+            if (child.material.map){
+                child.material.map.minFilter = THREE.LinearFilter
+            }
         }
-
-        scene.add(glb.scene)
     })
+    scene.add(glb.scene)
 })
 
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 1000);
 camera.position.z = 5;
 
 const renderer = new THREE.WebGLRenderer({canvas:canvas, antialias: true});
